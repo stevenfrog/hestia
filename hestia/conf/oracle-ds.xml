@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<datasources>
+   <local-tx-datasource>
+      <jndi-name>HestiaDS</jndi-name>
+
+      <connection-url>@ds.jdbc.url@</connection-url>
+      <driver-class>@ds.jdbc.driver@</driver-class>
+      <user-name>@ds.jdbc.user@</user-name>
+      <password>@ds.jdbc.pass@</password>
+
+      <min-pool-size>5</min-pool-size>
+      <max-pool-size>100</max-pool-size>
+      <idle-timeout-minutes>0</idle-timeout-minutes>
+      <track-statements/>
+      <prepared-statement-cache-size>32</prepared-statement-cache-size>
+      <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.OracleExceptionSorter</exception-sorter-class-name>
+   </local-tx-datasource>
+</datasources>

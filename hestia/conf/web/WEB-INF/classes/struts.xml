@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+
+    <package name="default" namespace="/" extends="struts-default">
+
+        <interceptors>
+
+            <interceptor name="authorizationInterceptor"
+                class="com.hestia.warroom.frontend.interceptors.AuthorizationInterceptor">
+            </interceptor>
+            <interceptor name="authenticationInterceptor"
+                class="com.hestia.warroom.frontend.interceptors.AuthenticationInterceptor">
+            </interceptor>
+            <interceptor name="userRoleInterceptor"
+                class="com.hestia.warroom.frontend.interceptors.UserRoleInterceptor">
+            </interceptor>
+
+            <interceptor-stack name="mydefault">
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+
+            <interceptor-stack name="authStack">
+                <interceptor-ref name="mydefault" />
+                <interceptor-ref name="authenticationInterceptor" />
+                <interceptor-ref name="userRoleInterceptor" />
+                <interceptor-ref name="authorizationInterceptor" />
+            </interceptor-stack>
+
+        </interceptors>
+
+        <default-interceptor-ref name="mydefault" />
+
+        <global-results>
+            <result name="error">/error.jsp</result>
+            <result name="loginPage">/WEB-INF/Login.jsp</result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error"/>
+            <exception-mapping exception="com.hestia.warroom.services.HestiaWarRoomAuthenticationFailedException" result="error"/>
+            <exception-mapping exception="com.hestia.warroom.services.HestiaWarRoomPersistenceException" result="error"/>
+            <exception-mapping exception="com.hestia.warroom.services.HestiaWarRoomServiceConfigurationException" result="error"/>
+            <exception-mapping exception="com.hestia.warroom.frontend.interceptors.AuthorizationException" result="error"/>
+        </global-exception-mappings>
+
+        <action name="LoginAction" class="com.hestia.warroom.frontend.actions.LoginAction">
+            <result name="loginError">/WEB-INF/Login.jsp</result>
+            <result name="input">/WEB-INF/Login.jsp</result>
+            <result name="success">/WEB-INF/My_War_Room.jsp</result>
+            <result name="success-user" type="chain">GoToUserHome</result>
+            <result name="success-admin" type="chain">GoToAdminHome</result>
+            <result name="redirect" type="redirect">${redirectURL}</result>
+        </action>
+
+        <action name="LogoutAction" class="com.hestia.warroom.frontend.actions.LogoutAction">
+            <result name="success">/WEB-INF/Login.jsp</result>
+        </action>
+
+        <action name="GoToUserHome">
+            <interceptor-ref name="authStack"/>
+ 			<result type="redirectAction">
+         		<param name="actionName">MyWarRoom</param>
+         		<param name="namespace">/</param>
+      		</result>
+        </action>
+
+        <action name="MyWarRoom" class="com.hestia.warroom.frontend.actions.ViewMyWarRoomAction" method="execute">
+            <interceptor-ref name="authStack"/>
+            <result>/WEB-INF/My_War_Room.jsp</result>
+        </action>
+
+        <action name="OpenFilter" class="com.hestia.warroom.frontend.actions.ViewMyWarRoomAction" method="openFilter">
+            <interceptor-ref name="authStack"/>
+		    <result name="GLOBAL_FILTER" type="redirectAction">
+		      <param name="namespace">/</param>
+		      <param name="actionName">ProductSearchAction</param>
+		      <param name="filterId">${filterId}</param>
+		      <param name="loadFilter">true</param>
+		    </result>
+		    <result name="INPUT_PRICE_FILTER" type="redirectAction">
+		      <param name="namespace">/</param>
+		      <param name="actionName">GoToInputPriceAction</param>
+		      <param name="filterId">${filterId}</param>
+		      <param name="productId">${productId}</param>
+		      <param name="loadFilter">true</param>
+		    </result>
+		    <result name="ADJUSTMENT_FILTER" type="redirectAction">
+		      <param name="namespace">/</param>
+		      <param name="actionName">GoToAdjustmentsAction</param>
+		      <param name="filterId">${filterId}</param>
+		      <param name="productId">${productId}</param>
+		      <param name="loadFilter">true</param>
+		    </result>
+		    <result name="FREIGHT_FILTER" type="redirectAction">
+		      <param name="namespace">/</param>
+		      <param name="actionName">GoToFreightAction</param>
+		      <param name="filterId">${filterId}</param>
+		      <param name="productId">${productId}</param>
+		      <param name="branchId">${branchId}</param>
+		      <param name="loadFilter">true</param>
+		    </result>
+		    <result name="BRANCH_OVERRIDE_FILTER" type="redirectAction">
+		      <param name="namespace">/</param>
+		      <param name="actionName">GoToBranchOverrideAction</param>
+		      <param name="filterId">${filterId}</param>
+		      <param name="productId">${productId}</param>
+		      <param name="branchId">${branchId}</param>
+		      <param name="loadFilter">true</param>
+		    </result>
+        </action>
+
+        <action name="GoToAdminHome">
+            <interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Admin.jsp</result>
+        </action>
+
+        <action name="SwitchUserAction" class="com.hestia.warroom.frontend.actions.SwitchUserAction">
+            <interceptor-ref name="authStack"/>
+            <result name="success" type="redirect">LogoutAction.action</result>
+            <result name="success-user" type="chain">GoToUserHome</result>
+            <result name="success-admin" type="chain">GoToAdminHome</result>
+        </action>
+
+		<!--======= Hestia War Room Search and Input Price Module Assembly goes here ============-->
+
+        <action name="GoToSearch">
+			<interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Search.jsp</result>
+        </action>
+
+        <action name="GoToInputPriceAction" class="com.hestia.warroom.frontend.actions.GoToInputPriceAction">
+			<interceptor-ref name="authStack"/>
+            <result name="success">/WEB-INF/Input_Prices.jsp</result>
+        </action>
+
+        <action name="GoToAdjustmentsAction" class="com.hestia.warroom.frontend.actions.GoToInputPriceAction">
+			<interceptor-ref name="authStack"/>
+            <result name="success">/WEB-INF/Adjustments.jsp</result>
+        </action>
+
+        <action name="GoToFreightAction" class="com.hestia.warroom.frontend.actions.GoToInputPriceAction">
+			<interceptor-ref name="authStack"/>
+            <result name="success">/WEB-INF/Freight.jsp</result>
+        </action>
+
+        <action name="GoToBranchOverrideAction" class="com.hestia.warroom.frontend.actions.GoToInputPriceAction">
+			<interceptor-ref name="authStack"/>
+            <result name="success">/WEB-INF/Branch_Overrides.jsp</result>
+        </action>
+
+        <action name="ProductSearchAction" class="com.hestia.warroom.frontend.actions.GoToInputPriceAction">
+			<interceptor-ref name="authStack"/>
+            <result name="success">/WEB-INF/Search.jsp</result>
+        </action>
+
+        <action name="SwitchSearchTabAction" class="com.hestia.warroom.frontend.actions.SwitchSearchTabAction">
+			<interceptor-ref name="authStack"/>
+            <result name="inputPrices">/WEB-INF/includes/input_prices_results_section.jsp</result>
+            <result name="adjustment">/WEB-INF/includes/adjustment_results_section.jsp</result>
+            <result name="freight">/WEB-INF/includes/freight_results_section.jsp</result>
+            <result name="branchOverride">/WEB-INF/includes/branch_overrides_results_section.jsp</result>
+        </action>
+
+        <action name="ExportAction" class="com.hestia.warroom.frontend.actions.ExportAction">
+			<interceptor-ref name="authStack"/>
+			<result type="httpheader">
+			  <param name="status">200</param>
+			</result>
+        </action>
+
+        <action name="ExportResultsAction" class="com.hestia.warroom.frontend.actions.ExportAction" method="exportResults">
+            <interceptor-ref name="authStack"/>
+            <result name="success" type="stream">
+                <param name="contentType">application/octet-stream</param>
+                <param name="inputName">fileInputStream</param>
+                <param name="contentDisposition">attachment;filename="${filename}.csv"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+        </action>
+
+        <action name="SaveAllChangesAction" class="com.hestia.warroom.frontend.actions.SaveAllChangesAction">
+            <interceptor-ref name="authStack"/>
+            <result name="success">/WEB-INF/Input_Prices.jsp</result>
+        </action>
+
+        <action name="CalculatePriceAction" class="com.hestia.warroom.frontend.actions.CalculatePriceAction">
+            <interceptor-ref name="authStack"/>
+            <result name="success">/WEB-INF/Input_Prices.jsp</result>
+        </action>
+
+		<action name="SearchAction" class="com.hestia.warroom.frontend.actions.SearchAction">
+            <interceptor-ref name="authStack"/>
+            <result name="cwtype">/WEB-INF/includes/inputpricerecords.jsp</result>
+			<result name="othertype">/WEB-INF/includes/inputpriceothertypes.jsp</result>
+            <result name="cwtype_search">/WEB-INF/includes/inputpricerecords_search.jsp</result>
+			<result name="othertype_search">/WEB-INF/includes/inputpriceothertypes_search.jsp</result>
+			<result name="input">/WEB-INF/includes/inputpricerecords.jsp</result>
+			<result name="adjustment_cwtype">/WEB-INF/includes/adjustmentrecords.jsp</result>
+			<result name="adjustment_othertype">/WEB-INF/includes/adjustmentothertypes.jsp</result>
+			<result name="freight_cwtype">/WEB-INF/includes/freightrecords.jsp</result>
+			<result name="freight_othertype">/WEB-INF/includes/freightothertypes.jsp</result>
+			<result name="branch_overrides_cwtype">/WEB-INF/includes/branch_overrides_records.jsp</result>
+			<result name="branch_overrides_othertype">/WEB-INF/includes/branch_overrides_othertypes.jsp</result>
+        </action>
+
+		<action name="ShowPricingPageAction" class="com.hestia.warroom.frontend.actions.CalculateBranchPricesAction" method="execute">
+			<interceptor-ref name="authStack"/>
+            <result>/WEB-INF/BranchPricing.jsp</result>
+        </action>
+
+		<action name="CategorySearch" class="com.hestia.warroom.frontend.actions.CategoryAction" method="render">
+			<interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Category.jsp</result>
+        </action>
+        <action name="UserSearch" class="com.hestia.warroom.frontend.actions.UserAction" method="render">
+            <interceptor-ref name="authStack"/>
+            <result>/WEB-INF/User.jsp</result>
+        </action>
+        <action name="DestinationSearch" class="com.hestia.warroom.frontend.actions.DestinationAction" method="render">
+            <interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Destination.jsp</result>
+        </action>
+        <action name="OriginationSearch" class="com.hestia.warroom.frontend.actions.OriginationAction" method="render">
+            <interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Origination.jsp</result>
+        </action>
+        <action name="OriginationToDestinationFreightRateSearch" class="com.hestia.warroom.frontend.actions.OriginationToDestinationFreightRateAction" method="render">
+            <interceptor-ref name="authStack"/>
+            <result>/WEB-INF/OriginationToDestinationFreightRate.jsp</result>
+        </action>
+        <action name="OriginationToStateFreightRateSearch" class="com.hestia.warroom.frontend.actions.OriginationToStateFreightRateAction" method="render">
+            <interceptor-ref name="authStack"/>
+            <result>/WEB-INF/OriginationToStateFreightRate.jsp</result>
+        </action>
+		<action name="VendorSearch" class="com.hestia.warroom.frontend.actions.VendorAction" method="render">
+			<interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Vendor.jsp</result>
+        </action>
+
+		<action name="ShipPointSearch" class="com.hestia.warroom.frontend.actions.ShipPointAction" method="render">
+			<interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Shipping_Points.jsp</result>
+        </action>
+
+		<action name="ProductSearch" class="com.hestia.warroom.frontend.actions.ProductAction" method="render">
+			<interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Product.jsp</result>
+        </action>
+
+		<action name="MarketSearch" class="com.hestia.warroom.frontend.actions.MarketAction" method="render">
+			<interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Market.jsp</result>
+        </action>
+
+		<action name="BranchSearch" class="com.hestia.warroom.frontend.actions.BranchAction" method="render">
+			<interceptor-ref name="authStack"/>
+            <result>/WEB-INF/Branch.jsp</result>
+        </action>
+
+        <action name="GetSavedFilterWidget" class="com.hestia.warroom.frontend.actions.GetSavedFilterWidgetAction" method="execute">
+            <interceptor-ref name="authStack"/>
+            <result>/WEB-INF/includes/mysavedfilterswidget.jsp</result>
+        </action>
+
+    </package>
+
+	<package name="ajax" namespace="/ajax" extends="json-default">
+        <interceptors>
+            <interceptor name="authorizationInterceptor" class="com.hestia.warroom.frontend.interceptors.AuthorizationInterceptor" />
+            <interceptor name="authenticationInterceptor" class="com.hestia.warroom.frontend.interceptors.AuthenticationInterceptor" />
+            <interceptor name="userRoleInterceptor" class="com.hestia.warroom.frontend.interceptors.UserRoleInterceptor" />
+            <interceptor-stack name="authStack">
+                <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="userRoleInterceptor" />
+                <interceptor-ref name="authenticationInterceptor" />
+                <interceptor-ref name="authorizationInterceptor" />
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref name="authStack" />
+
+        <global-results>
+			<result name="error" type="httpheader">
+			  <param name="error">500</param>
+			  <param name="errorMessage">Your request could not be processed at this time.</param>
+			</result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error"/>
+        </global-exception-mappings>
+
+        <action name="SaveSearchFilterAction" class="com.hestia.warroom.frontend.actions.SaveSearchFilterAction">
+          <result type="json" />
+        </action>
+
+        <action name="DeleteSavedFilter" class="com.hestia.warroom.frontend.actions.DeleteSearchFilterAction">
+          <result type="json" />
+        </action>
+
+        <action name="ApplyInputPriceChangesAction" class="com.hestia.warroom.frontend.actions.ApplyInputPriceChangesAction">
+       	  <result type="json" />
+        </action>
+
+        <action name="SaveAllInputPriceChangesAction" class="com.hestia.warroom.frontend.actions.ApplyInputPriceChangesAction" method="saveAll">
+       	  <result type="json">
+       	     <param name="includeProperties">numSavedEntities,returnMessage</param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UndoInputPriceChangesAction" class="com.hestia.warroom.frontend.actions.ApplyInputPriceChangesAction" method="undo">
+       	  <result type="json">
+       	     <param name="includeProperties">numSavedEntities</param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="ApplyAdjustmentChangesAction" class="com.hestia.warroom.frontend.actions.ApplyAdjustmentChangesAction">
+       	  <result type="json" />
+        </action>
+
+        <action name="SaveAllAdjustmentChangesAction" class="com.hestia.warroom.frontend.actions.ApplyAdjustmentChangesAction" method="saveAll">
+       	  <result type="json">
+       	     <param name="includeProperties">numSavedEntities</param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UndoAdjustmentChangesAction" class="com.hestia.warroom.frontend.actions.ApplyAdjustmentChangesAction" method="undo">
+       	  <result type="json">
+       	     <param name="includeProperties">numSavedEntities</param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="ApplyFreightChangesAction" class="com.hestia.warroom.frontend.actions.ApplyFreightChangesAction">
+       	  <result type="json" />
+        </action>
+
+        <action name="SaveAllFreightChangesAction" class="com.hestia.warroom.frontend.actions.ApplyFreightChangesAction" method="saveAll">
+       	  <result type="json">
+       	     <param name="includeProperties">numSavedEntities</param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UndoFreightChangesAction" class="com.hestia.warroom.frontend.actions.ApplyFreightChangesAction" method="undo">
+       	  <result type="json">
+       	     <param name="includeProperties">numSavedEntities</param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="ApplyBranchOverrideChangesAction" class="com.hestia.warroom.frontend.actions.ApplyBranchOverrideChangesAction">
+       	  <result type="json" />
+        </action>
+
+        <action name="SaveAllBranchOverrideChangesAction" class="com.hestia.warroom.frontend.actions.ApplyBranchOverrideChangesAction" method="saveAll">
+       	  <result type="json">
+       	     <param name="includeProperties">numSavedEntities</param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UndoBranchOverrideChangesAction" class="com.hestia.warroom.frontend.actions.ApplyBranchOverrideChangesAction" method="undo">
+       	  <result type="json">
+       	     <param name="includeProperties">numSavedEntities</param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="SaveMyPricingAction" class="com.hestia.warroom.frontend.actions.ViewMyWarRoomAction" method="saveMyPricing">
+       	  <result type="json">
+       	     <param name="includeProperties"></param>
+             <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+		<action name="SelectVendors" class="com.hestia.warroom.frontend.actions.UpdateInterdependenciesAction" method="selectVendors">
+        	<result type="json" />
+        </action>
+		<action name="SelectTypes" class="com.hestia.warroom.frontend.actions.UpdateInterdependenciesAction" method="selectTypes">
+        	<result type="json" />
+        </action>
+		<action name="SelectCategories" class="com.hestia.warroom.frontend.actions.UpdateInterdependenciesAction" method="selectCategories">
+        	<result type="json" />
+        </action>
+		<action name="SelectMarkets" class="com.hestia.warroom.frontend.actions.UpdateInterdependenciesAction" method="selectMarkets">
+        	<result type="json" />
+        </action>
+
+        <action name="SearchVendors" class="com.hestia.warroom.frontend.actions.VendorAction" method="search">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="CreateVendor" class="com.hestia.warroom.frontend.actions.VendorAction" method="create">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="GetVendor" class="com.hestia.warroom.frontend.actions.VendorAction" method="get">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="UpdateVendor" class="com.hestia.warroom.frontend.actions.VendorAction" method="update">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="DeleteVendors" class="com.hestia.warroom.frontend.actions.VendorAction" method="delete">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="SearchCategories" class="com.hestia.warroom.frontend.actions.CategoryAction" method="search">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="CreateCategory" class="com.hestia.warroom.frontend.actions.CategoryAction" method="create">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="GetCategory" class="com.hestia.warroom.frontend.actions.CategoryAction" method="get">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="UpdateCategory" class="com.hestia.warroom.frontend.actions.CategoryAction" method="update">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="DeleteCategories" class="com.hestia.warroom.frontend.actions.CategoryAction" method="delete">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="SearchShipPoints" class="com.hestia.warroom.frontend.actions.ShipPointAction" method="search">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="CreateShipPoint" class="com.hestia.warroom.frontend.actions.ShipPointAction" method="create">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="GetShipPoint" class="com.hestia.warroom.frontend.actions.ShipPointAction" method="get">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="UpdateShipPoint" class="com.hestia.warroom.frontend.actions.ShipPointAction" method="update">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="DeleteShipPoints" class="com.hestia.warroom.frontend.actions.ShipPointAction" method="delete">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="SearchProducts" class="com.hestia.warroom.frontend.actions.ProductAction" method="search">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="CreateProduct" class="com.hestia.warroom.frontend.actions.ProductAction" method="create">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="GetProduct" class="com.hestia.warroom.frontend.actions.ProductAction" method="get">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="UpdateProduct" class="com.hestia.warroom.frontend.actions.ProductAction" method="update">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="DeleteProducts" class="com.hestia.warroom.frontend.actions.ProductAction" method="delete">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="SearchMarkets" class="com.hestia.warroom.frontend.actions.MarketAction" method="search">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="CreateMarket" class="com.hestia.warroom.frontend.actions.MarketAction" method="create">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="GetMarket" class="com.hestia.warroom.frontend.actions.MarketAction" method="get">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="UpdateMarket" class="com.hestia.warroom.frontend.actions.MarketAction" method="update">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="DeleteMarkets" class="com.hestia.warroom.frontend.actions.MarketAction" method="delete">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="SearchBranches" class="com.hestia.warroom.frontend.actions.BranchAction" method="search">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="CreateBranch" class="com.hestia.warroom.frontend.actions.BranchAction" method="create">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="GetBranch" class="com.hestia.warroom.frontend.actions.BranchAction" method="get">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="UpdateBranch" class="com.hestia.warroom.frontend.actions.BranchAction" method="update">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <action name="DeleteBranches" class="com.hestia.warroom.frontend.actions.BranchAction" method="delete">
+       	  <result type="json">
+       	  	<param name="ignoreHierarchy">false</param>
+       	  </result>
+        </action>
+
+        <!-- UserAction -->
+        <action name="SearchUsers" class="com.hestia.warroom.frontend.actions.UserAction" method="search">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="CreateUser" class="com.hestia.warroom.frontend.actions.UserAction" method="create">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="GetUser" class="com.hestia.warroom.frontend.actions.UserAction" method="get">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UpdateUser" class="com.hestia.warroom.frontend.actions.UserAction" method="update">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="DeleteUsers" class="com.hestia.warroom.frontend.actions.UserAction" method="delete">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <!-- DestinationAction -->
+        <action name="SearchDestinations" class="com.hestia.warroom.frontend.actions.DestinationAction" method="search">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="CreateDestination" class="com.hestia.warroom.frontend.actions.DestinationAction" method="create">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="GetDestination" class="com.hestia.warroom.frontend.actions.DestinationAction" method="get">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UpdateDestination" class="com.hestia.warroom.frontend.actions.DestinationAction" method="update">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="DeleteDestinations" class="com.hestia.warroom.frontend.actions.DestinationAction" method="delete">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <!-- OriginationAction -->
+        <action name="SearchOriginations" class="com.hestia.warroom.frontend.actions.OriginationAction" method="search">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="CreateOrigination" class="com.hestia.warroom.frontend.actions.OriginationAction" method="create">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="GetOrigination" class="com.hestia.warroom.frontend.actions.OriginationAction" method="get">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UpdateOrigination" class="com.hestia.warroom.frontend.actions.OriginationAction" method="update">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="DeleteOriginations" class="com.hestia.warroom.frontend.actions.OriginationAction" method="delete">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <!-- OriginationToStateFreightRateAction -->
+        <action name="SearchOriginationToStateFreightRates" class="com.hestia.warroom.frontend.actions.OriginationToStateFreightRateAction" method="search">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="CreateOriginationToStateFreightRate" class="com.hestia.warroom.frontend.actions.OriginationToStateFreightRateAction" method="create">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="GetOriginationToStateFreightRate" class="com.hestia.warroom.frontend.actions.OriginationToStateFreightRateAction" method="get">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UpdateOriginationToStateFreightRate" class="com.hestia.warroom.frontend.actions.OriginationToStateFreightRateAction" method="update">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="DeleteOriginationToStateFreightRates" class="com.hestia.warroom.frontend.actions.OriginationToStateFreightRateAction" method="delete">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <!-- OriginationToDestinationFreightRateAction -->
+        <action name="SearchOriginationToDestinationFreightRates" class="com.hestia.warroom.frontend.actions.OriginationToDestinationFreightRateAction" method="search">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="CreateOriginationToDestinationFreightRate" class="com.hestia.warroom.frontend.actions.OriginationToDestinationFreightRateAction" method="create">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="GetOriginationToDestinationFreightRate" class="com.hestia.warroom.frontend.actions.OriginationToDestinationFreightRateAction" method="get">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="UpdateOriginationToDestinationFreightRate" class="com.hestia.warroom.frontend.actions.OriginationToDestinationFreightRateAction" method="update">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+        <action name="DeleteOriginationToDestinationFreightRates" class="com.hestia.warroom.frontend.actions.OriginationToDestinationFreightRateAction" method="delete">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+        <action name="UpdateStateFSCRate" class="com.hestia.warroom.frontend.actions.OriginationToStateFreightRateAction" method="updateFSC">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+        <action name="UpdateMFCRate" class="com.hestia.warroom.frontend.actions.OriginationToDestinationFreightRateAction" method="updateMFC">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="SearchMyPricingAndFiltersAction" class="com.hestia.warroom.frontend.actions.ViewMyWarRoomAction" method="execute">
+          <result type="json">
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+        <action name="DeleteValueByMyPricingAction" class="com.hestia.warroom.frontend.actions.ViewMyWarRoomAction" method="deleteValueByMyPricing">
+          <result type="json">
+            <param name="includeProperties">hasDeleteRelatedValue</param>
+            <param name="ignoreHierarchy">false</param>
+          </result>
+        </action>
+
+	</package>
+</struts>

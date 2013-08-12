@@ -1,0 +1,39 @@
+xjtufreeman  1.1.1
+1. fixed, only need  'Edit', 'Delete', see forum http://apps.topcoder.com/forums/?module=Thread&threadID=796220&start=0
+2. fixed
+3. not fixed, I still want to discuss with admin
+4. fixed
+5. waste so much of my time, go back to my original implementation http://apps.topcoder.com/forums/?module=Thread&threadID=796138&start=0
+6. keep it till now http://apps.topcoder.com/forums/?module=Thread&threadID=796226&start=0
+
+morehappiness 1.1.1
+1,3 'save all' and 'undo''s function has gone back to original http://apps.topcoder.com/forums/?module=Thread&threadID=796138&start=0
+2. fixed
+4. fixed
+8. no need fix, keep it till now http://apps.topcoder.com/forums/?module=Thread&threadID=796226&start=0
+9. no need fix, review wrong http://apps.topcoder.com/forums/?module=Thread&threadID=796225&start=0
+
+seeef 1.1.1
+4, 5, 6 . The function changed, it appears in table now.
+
+
+
+2.1.7
+xjtufreeman
+1) no need   http://apps.topcoder.com/forums/?module=Thread&threadID=796229&start=0
+2) fixed
+
+seeef
+Strange, I can not see these problems in XP(cn), IE8.
+I have send it to admin, but no reply yet.
+
+2.2.9
+I have to keep ReadExcelToDBTableTool, because this file is so related to XXXX.xls
+Some classes add change log and remove classes that not modified by me.
+
+2.2.10
+This is like 2.2.9, I added files not modified by me.
+I have remove this file from my submission.
+
+4.1.1
+fixed

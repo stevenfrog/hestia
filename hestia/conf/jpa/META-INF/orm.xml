@@ -1,0 +1,745 @@
+<?xml version="1.0" encoding="utf-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm
+        http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+    version="1.0">
+
+    <mapped-superclass class="com.hestia.warroom.entities.IdentifiableEntity">
+    </mapped-superclass>
+
+    <mapped-superclass class="com.hestia.warroom.entities.LookupEntity">
+      <attributes>
+        <basic name="name">
+          <column name="name" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+      </attributes>
+    </mapped-superclass>
+
+    <mapped-superclass class="com.hestia.warroom.entities.AuditableEntity">
+      <attributes>
+        <basic name="createdBy">
+          <column name="creation_user" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="createdOn">
+          <column name="creation_date" nullable="false" column-definition="TIMESTAMP"/>
+        </basic>
+        <basic name="updatedBy">
+          <column name="modification_user" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="updatedOn">
+          <column name="modification_date" nullable="false" column-definition="TIMESTAMP"/>
+        </basic>
+      </attributes>
+    </mapped-superclass>
+
+    <mapped-superclass class="com.hestia.warroom.entities.DateEffectiveEntity">
+      <attributes>
+        <basic name="startDate">
+            <column name="start_date" nullable="false" column-definition="TIMESTAMP"/>
+        </basic>
+        <basic name="endDate">
+            <column name="end_date" nullable="false" column-definition="TIMESTAMP"/>
+        </basic>
+        <basic name="comment">
+            <column name="PricingAdjustmentcol" nullable="false" column-definition="VARCHAR(200)"/>
+        </basic>
+      </attributes>
+    </mapped-superclass>
+
+    <mapped-superclass class="com.hestia.warroom.entities.BranchRecordValueEntity">
+      <attributes>
+        <basic name="recordTypeName">
+            <column name="recordTypeName" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="recordId">
+            <column name="record_id" nullable="false" column-definition="NUMBER(19)"/>
+        </basic>
+        <basic name="value">
+            <column name="value" nullable="false" column-definition="DECIMAL(20,2)"/>
+        </basic>
+        <many-to-one name="branch" target-entity="com.hestia.warroom.entities.Branch" fetch="EAGER">
+          <join-column name="branch_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+      </attributes>
+    </mapped-superclass>
+
+    <mapped-superclass class="com.hestia.warroom.entities.BasePricingRecord">
+      <attributes>
+        <many-to-one name="product" target-entity="com.hestia.warroom.entities.Product" fetch="EAGER">
+          <join-column name="product" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+        <many-to-one name="shipPoint" target-entity="com.hestia.warroom.entities.ShipPoint" fetch="EAGER">
+          <join-column name="shippoint_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+      </attributes>
+    </mapped-superclass>
+
+    <entity name="State" class="com.hestia.warroom.entities.State">
+      <table name="State"/>
+      <sequence-generator name="StateSeq" sequence-name="StateSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="StateSeq" strategy="SEQUENCE" />
+        </id>
+      </attributes>
+    </entity>
+
+    <entity name="District" class="com.hestia.warroom.entities.District">
+      <table name="District"/>
+      <sequence-generator name="DistrictSeq" sequence-name="DistrictSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="DistrictSeq" strategy="SEQUENCE" />
+        </id>
+      </attributes>
+    </entity>
+
+    <entity name="Region" class="com.hestia.warroom.entities.Region">
+      <table name="Region"/>
+      <sequence-generator name="RegionSeq" sequence-name="RegionSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="RegionSeq" strategy="SEQUENCE" />
+        </id>
+      </attributes>
+    </entity>
+
+    <entity name="ProductType" class="com.hestia.warroom.entities.ProductType">
+      <table name="ProductType"/>
+      <sequence-generator name="ProductTypeSeq" sequence-name="ProductTypeSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="ProductTypeSeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="name">
+          <column name="name" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+      </attributes>
+    </entity>
+
+    <entity name="Market" class="com.hestia.warroom.entities.Market">
+      <table name="Market"/>
+      <sequence-generator name="MarketSeq" sequence-name="MarketSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="MarketSeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="name">
+          <column name="name" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="description">
+          <column name="description" nullable="false" column-definition="VARCHAR(200)"/>
+        </basic>
+      </attributes>
+    </entity>
+
+    <entity name="Branch" class="com.hestia.warroom.entities.Branch">
+      <table name="Branch"/>
+      <sequence-generator name="BranchSeq" sequence-name="BranchSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="BranchSeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="branchNumber">
+          <column name="branchNumber" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="profitCenter">
+          <column name="profitCenter" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="triLogonName">
+          <column name="triLogonName" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="machineName">
+          <column name="machineName" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="phoneNumber">
+          <column name="phoneNumber" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="faxNumber">
+          <column name="faxNumber" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contactName">
+          <column name="contactName" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="generalManagerName">
+          <column name="generalManagerName" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="address1">
+          <column name="address1" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="address2">
+          <column name="address2" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="city">
+          <column name="city" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="zipCode">
+          <column name="zipCode" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="minimalAllowedPrice">
+          <column name="minimalAllowedPrice" nullable="true" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="minimalAllowedFreightRate">
+          <column name="minimalAllowedFreightRate" nullable="true" column-definition="VARCHAR(20)"/>
+        </basic>
+        <many-to-one name="market" target-entity="com.hestia.warroom.entities.Market" fetch="EAGER">
+          <join-column name="market_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+        <many-to-one name="region" target-entity="com.hestia.warroom.entities.Region" fetch="EAGER">
+          <join-column name="region_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+        <many-to-one name="district" target-entity="com.hestia.warroom.entities.District" fetch="EAGER">
+          <join-column name="district_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+        <many-to-one name="state" target-entity="com.hestia.warroom.entities.State" fetch="EAGER">
+          <join-column name="state_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+      </attributes>
+    </entity>
+
+    <entity name="Category" class="com.hestia.warroom.entities.Category">
+      <table name="Category"/>
+      <sequence-generator name="CategorySeq" sequence-name="CategorySeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="CategorySeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="name">
+          <column name="name" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="description">
+          <column name="description" nullable="false" column-definition="VARCHAR(200)"/>
+        </basic>
+        <many-to-one name="branch" target-entity="com.hestia.warroom.entities.Branch" fetch="EAGER">
+          <join-column name="branch_id"/>
+        </many-to-one>
+      </attributes>
+    </entity>
+
+    <entity name="ShipPoint" class="com.hestia.warroom.entities.ShipPoint">
+      <table name="ShipPoint"/>
+      <sequence-generator name="ShipPointSeq" sequence-name="ShipPointSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="ShipPointSeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="name">
+          <column name="name" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="description">
+          <column name="description" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="zipCode">
+          <column name="zipCode" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="phoneNumber1">
+          <column name="phoneNumber1" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="phoneNumber2">
+          <column name="phoneNumber2" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contact1Name">
+          <column name="contact1Name" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contact1EmailAddress">
+          <column name="contact1EmailAddress" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contact2Name">
+          <column name="contact2Name" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contact2EmailAddress">
+          <column name="contact2EmailAddress" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="faxNumber">
+          <column name="faxNumber" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="isADC">
+          <column name="isADC" nullable="false" column-definition="NUMBER(1)"/>
+        </basic>
+        <basic name="typeId">
+          <column name="TYPE_ID" nullable="false" column-definition="NUMBER(19)"/>
+        </basic>
+        <many-to-one name="vendor" target-entity="com.hestia.warroom.entities.Vendor" fetch="EAGER">
+          <join-column name="vendor_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+      </attributes>
+    </entity>
+
+    <entity name="Vendor" class="com.hestia.warroom.entities.Vendor">
+      <table name="Vendor"/>
+      <sequence-generator name="VendorSeq" sequence-name="VendorSeq" />
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="VendorSeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="vendorNumber">
+          <column name="vendorNumber" nullable="false" column-definition="VARCHAR(50)"/>
+        </basic>
+        <basic name="name">
+          <column name="name" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="address1">
+          <column name="address1" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="address2">
+          <column name="address2" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="city">
+          <column name="city" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="zipCode">
+          <column name="zipCode" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="phoneNumber1">
+          <column name="phoneNumber1" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="phoneNumber2">
+          <column name="phoneNumber2" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contact1Name">
+          <column name="contact1Name" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contact1EmailAddress">
+          <column name="contact1EmailAddress" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contact2Name">
+          <column name="contact2Name" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="contact2EmailAddress">
+          <column name="contact2EmailAddress" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="faxNumber">
+          <column name="faxNumber" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <many-to-one name="state" target-entity="com.hestia.warroom.entities.State" fetch="EAGER">
+          <join-column name="state_id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+        <one-to-many name="shipPoints" target-entity="com.hestia.warroom.entities.ShipPoint" mapped-by="vendor">
+        </one-to-many>
+      </attributes>
+    </entity>
+
+    <entity name="Product" class="com.hestia.warroom.entities.Product">
+      <table name="Product"/>
+      <sequence-generator name="ProductSeq" sequence-name="ProductSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="ProductSeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="productCode">
+          <column name="productCode" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+        <basic name="alternateCode1">
+          <column name="alternateCode1" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="description">
+          <column name="description" nullable="false" column-definition="VARCHAR(200)"/>
+        </basic>
+        <basic name="hundredWeight">
+          <column name="hundredWeight" nullable="false" column-definition="BINARY_DOUBLE"/>
+        </basic>
+        <basic name="listPrice">
+          <column name="listPrice" nullable="true" column-definition="DECIMAL(20)"/>
+        </basic>
+        <many-to-one name="type" target-entity="com.hestia.warroom.entities.ProductType" fetch="EAGER">
+          <join-column name="product_type_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+        <many-to-one name="category" target-entity="com.hestia.warroom.entities.Category" fetch="EAGER">
+          <join-column name="category_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+        </many-to-one>
+
+      </attributes>
+    </entity>
+
+    <entity name="UserRole" class="com.hestia.warroom.entities.UserRole">
+      <table name="Role"/>
+      <sequence-generator name="RoleSeq" sequence-name="RoleSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="RoleSeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="name">
+          <column name="name" nullable="false" column-definition="VARCHAR(20)"/>
+        </basic>
+      </attributes>
+    </entity>
+
+    <entity name="User" class="com.hestia.warroom.entities.User">
+      <table name="user_table"/>
+      <sequence-generator name="UserSeq" sequence-name="UserSeq"/>
+      <attributes>
+        <id name="id">
+          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+          <generated-value generator="UserSeq" strategy="SEQUENCE" />
+        </id>
+        <basic name="username">
+          <column name="username" nullable="false" column-definition="VARCHAR(50)"/>
+        </basic>
+        <basic name="password">
+          <column name="password" nullable="false" column-definition="VARCHAR(50)"/>
+        </basic>
+        <basic name="token">
+          <column name="token" nullable="true" column-definition="VARCHAR(50)"/>
+        </basic>
+        <basic name="tokenCreatedOn">
+          <column name="token_creation_date" nullable="true" column-definition="TIMESTAMP"/>
+        </basic>
+        <basic name="remembered">
+          <column name="remember" nullable="false" column-definition="NUMBER(1)"/>
+        </basic>
+        <basic name="firstName">
+          <column name="firstName" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="lastName">
+          <column name="lastName" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="title">
+          <column name="title" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="phone">
+          <column name="phone" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="mobile">
+          <column name="mobile" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="fax">
+          <column name="fax" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="email">
+          <column name="email" nullable="false" column-definition="VARCHAR(45)"/>
+        </basic>
+        <basic name="lastLogin">
+          <column name="LAST_LOGIN_TS" nullable="true" column-definition="TIMESTAMP"/>
+        </basic>
+        <many-to-many name="roles" target-entity="com.hestia.warroom.entities.UserRole" fetch="LAZY">
+          <join-table name="User_Role">
+            <join-column name="user_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+            <inverse-join-column name="role_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+          </join-table>
+        </many-to-many>
+        <many-to-many name="branches" target-entity="com.hestia.warroom.entities.Branch" fetch="LAZY">
+          <join-table name="User_Branch">
+            <join-column name="user_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+            <inverse-join-column name="branch_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+          </join-table>
+        </many-to-many>
+      </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.BranchOverride">
+        <table name="BranchOverride"/>
+        <sequence-generator name="BranchOverrideSeq" sequence-name="BranchOverrideSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="BranchOverrideSeq" strategy="SEQUENCE" />
+	        </id>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.PricingAdjustment">
+        <table name="PricingAdjustment"/>
+        <sequence-generator name="PricingAdjustmentSeq" sequence-name="PricingAdjustmentSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="PricingAdjustmentSeq" strategy="SEQUENCE" />
+	        </id>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.UserFilterRecord">
+        <table name="UserFilterRecord"/>
+        <sequence-generator name="UserFilterRecordSeq" sequence-name="UserFilterRecordSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="UserFilterRecordSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="name">
+                <column name="name" nullable="false" column-definition="VARCHAR(50)"/>
+            </basic>
+            <basic name="type">
+                <column name="type" nullable="false" column-definition="NUMBER(11)"/>
+            </basic>
+            <basic name="readyToExport">
+                <column name="readyToExport" nullable="false" column-definition="NUMBER(1)"/>
+            </basic>
+            <basic name="criteriaFlag">
+                <column name="CRITERIAFLAG" nullable="false" column-definition="NUMBER(1)"/>
+            </basic>
+            <many-to-one name="owner" target-entity="com.hestia.warroom.entities.User" fetch="EAGER">
+				<join-column name="owner" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+            <many-to-many name="productTypes" target-entity="com.hestia.warroom.entities.ProductType" fetch="EAGER">
+              <join-table name="UserFilterRecord_ProductType">
+                <join-column name="UserFilterRecord_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+                <inverse-join-column name="ProductType_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+              </join-table>
+            </many-to-many>
+            <many-to-many name="vendors" target-entity="com.hestia.warroom.entities.Vendor" fetch="EAGER">
+              <join-table name="UserFilterRecord_Vendor">
+                <join-column name="UserFilterRecord_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+                <inverse-join-column name="Vendor_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+              </join-table>
+            </many-to-many>
+            <many-to-many name="branches" target-entity="com.hestia.warroom.entities.Branch" fetch="EAGER">
+              <join-table name="UserFilterRecord_Branch">
+                <join-column name="UserFilterRecord_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+                <inverse-join-column name="Branch_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+              </join-table>
+            </many-to-many>
+            <many-to-many name="markets" target-entity="com.hestia.warroom.entities.Market" fetch="EAGER">
+              <join-table name="UserFilterRecord_Market">
+                <join-column name="UserFilterRecord_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+                <inverse-join-column name="Market_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+              </join-table>
+            </many-to-many>
+            <many-to-many name="categories" target-entity="com.hestia.warroom.entities.Category" fetch="EAGER">
+              <join-table name="UserFilterRecord_Category">
+                <join-column name="UserFilterRecord_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+                <inverse-join-column name="Category_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+              </join-table>
+            </many-to-many>
+            <many-to-many name="shipPoints" target-entity="com.hestia.warroom.entities.ShipPoint" fetch="EAGER">
+              <join-table name="UserFilterRecord_ShipPoint">
+                <join-column name="UserFilterRecord_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+                <inverse-join-column name="ShipPoint_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+              </join-table>
+            </many-to-many>
+            <many-to-many name="products" target-entity="com.hestia.warroom.entities.Product" fetch="EAGER">
+              <join-table name="USERFILTERRECORD_PRODUCT">
+                <join-column name="UserFilterRecord_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+                <inverse-join-column name="Product_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+              </join-table>
+            </many-to-many>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.PricingRecord">
+        <table name="PricingRecord"/>
+        <sequence-generator name="PricingRecordSeq" sequence-name="PricingRecordSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="PricingRecordSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="initialPPT">
+                <column name="initialPPT" nullable="false" column-definition="DECIMAL(20)"/>
+            </basic>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.CWPricingRecord">
+        <table name="CWPricingRecord"/>
+        <sequence-generator name="CWPricingRecordSeq" sequence-name="CWPricingRecordSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="CWPricingRecordSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="initialListPrice">
+                <column name="initialListPrice" nullable="false" column-definition="NUMBER(20,2)"/>
+            </basic>
+            <basic name="initialMultiplier">
+                <column name="initialMultiplier" nullable="false" column-definition="NUMBER(20,4)"/>
+            </basic>
+
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.MyPricing">
+        <table name="MyPricing"/>
+        <sequence-generator name="MyPricingSeq" sequence-name="MyPricingSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="MyPricingSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="name">
+                <column name="name" nullable="false" column-definition="VARCHAR(20)"/>
+            </basic>
+            <basic name="progress">
+                <column name="progress" nullable="false" column-definition="BINARY_DOUBLE"/>
+            </basic>
+            <basic name="status">
+                <column name="status" nullable="false" column-definition="NUMBER(11)"/>
+            </basic>
+            <basic name="branchId">
+                <column name="BRANCHID" nullable="false" column-definition="NUMBER(19)"/>
+            </basic>
+            <basic name="relatedValueId">
+                <column name="RELATEDVALUEID" nullable="false" column-definition="NUMBER(19)"/>
+            </basic>
+            <many-to-one name="criteria" target-entity="com.hestia.warroom.entities.UserFilterRecord" fetch="EAGER">
+              <join-column name="criteria" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+            <many-to-one name="pricingRecord" target-entity="com.hestia.warroom.entities.PricingRecord" fetch="EAGER">
+              <join-column name="priceRecord" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+            <many-to-one name="cwPricingRecord" target-entity="com.hestia.warroom.entities.CWPricingRecord" fetch="EAGER">
+              <join-column name="cwPriceRecord" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.Destination">
+        <table name="Destination"/>
+        <sequence-generator name="DestinationSeq" sequence-name="DestinationSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="DestinationSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="br">
+                <column name="br" nullable="false" column-definition="VARCHAR(45)"/>
+            </basic>
+            <basic name="brLocation">
+                <column name="brLocation" nullable="false" column-definition="VARCHAR(45)"/>
+            </basic>
+            <basic name="zipCode">
+                <column name="zipCode" nullable="false" column-definition="VARCHAR(45)"/>
+            </basic>
+            <many-to-one name="state" target-entity="com.hestia.warroom.entities.State" fetch="EAGER">
+              <join-column name="state_id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.NewFreightRate">
+        <table name="NewFreightRate"/>
+        <sequence-generator name="NewFreightRateSeq" sequence-name="NewFreightRateSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="NewFreightRateSeq" strategy="SEQUENCE" />
+	        </id>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.NewListAndMultiplier">
+        <table name="NewListAndMultiplier"/>
+        <sequence-generator name="NewListAndMultiplierSeq" sequence-name="NewListAndMultiplierSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="NewListAndMultiplierSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="listPrice">
+                <column name="listPrice" nullable="false" column-definition="DECIMAL(20,2)"/>
+            </basic>
+            <basic name="multiplier">
+                <column name="multiplier" nullable="false" column-definition="DECIMAL(20,4)"/>
+            </basic>
+            <many-to-one name="pricingRecord" target-entity="com.hestia.warroom.entities.CWPricingRecord" fetch="EAGER">
+              <join-column name="record" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.NewPPT">
+        <table name="NewPPT"/>
+        <sequence-generator name="NewPPTSeq" sequence-name="NewPPTSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="NewPPTSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="value">
+                <column name="value" nullable="false" column-definition="DECIMAL(20)"/>
+            </basic>
+            <many-to-one name="pricingRecord" target-entity="com.hestia.warroom.entities.PricingRecord" fetch="EAGER">
+              <join-column name="record" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.Origination">
+        <table name="Origination"/>
+        <sequence-generator name="OriginationSeq" sequence-name="OriginationSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="OriginationSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="name">
+                <column name="name" nullable="false" column-definition="VARCHAR(20)"/>
+            </basic>
+            <basic name="zipCode">
+                <column name="zipCode" nullable="false" column-definition="VARCHAR(45)"/>
+            </basic>
+            <many-to-one name="state" target-entity="com.hestia.warroom.entities.State" fetch="EAGER">
+              <join-column name="state_id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+            <many-to-one name="type" target-entity="com.hestia.warroom.entities.ProductType" fetch="EAGER">
+              <join-column name="product_type_id" referenced-column-name="id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+    <entity class="com.hestia.warroom.entities.OriginationToDestinationFreightRate">
+        <table name="OgnToDstFreightRate"/>
+        <sequence-generator name="OgnToDstFreightRateSeq" sequence-name="OgnToDstFreightRateSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="OgnToDstFreightRateSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="freightRate">
+                <column name="freightRate" nullable="false" column-definition="BINARY_DOUBLE"/>
+            </basic>
+            <basic name="rate">
+                <column name="rate" column-definition="BINARY_DOUBLE"/>
+            </basic>
+            <basic name="fsc">
+                <column name="fsc" column-definition="BINARY_DOUBLE"/>
+            </basic>
+            <basic name="mileage">
+                <column name="mileage" nullable="false" column-definition="BINARY_DOUBLE"/>
+            </basic>
+            <many-to-one name="origination" target-entity="com.hestia.warroom.entities.Origination" fetch="LAZY">
+              <join-column name="origination_id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+            <many-to-one name="destination" target-entity="com.hestia.warroom.entities.Destination" fetch="LAZY">
+              <join-column name="destination" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+
+    <entity class="com.hestia.warroom.entities.OriginationToStateFreightRate">
+        <table name="OriginationToStateFreightRate"/>
+        <sequence-generator name="OgnToStateFreightRateSeq" sequence-name="OgnToStateFreightRateSeq"/>
+        <attributes>
+	        <id name="id">
+	          <column name="id" nullable="false" column-definition="NUMBER(19)"/>
+	          <generated-value generator="OgnToStateFreightRateSeq" strategy="SEQUENCE" />
+	        </id>
+            <basic name="freightRate">
+                <column name="freightRate" nullable="false" column-definition="BINARY_DOUBLE"/>
+            </basic>
+            <basic name="fsc">
+                <column name="fsc" column-definition="BINARY_DOUBLE"/>
+            </basic>
+            <many-to-one name="origination" target-entity="com.hestia.warroom.entities.Origination" fetch="LAZY">
+              <join-column name="origination_id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+            <many-to-one name="state" target-entity="com.hestia.warroom.entities.State" fetch="LAZY">
+              <join-column name="state_id" nullable="false" column-definition="NUMBER(19)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+</entity-mappings>

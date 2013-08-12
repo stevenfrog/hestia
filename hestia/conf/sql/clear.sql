@@ -1,0 +1,39 @@
+
+
+DELETE FROM  OriginationToStateFreightRate;
+DELETE FROM  OgnToDstFreightRate;
+DELETE FROM  Origination;
+DELETE FROM  NewPPT;
+DELETE FROM  NewListAndMultiplier;
+DELETE FROM  NewFreightRate;
+DELETE FROM  Destination;
+DELETE FROM  MyPricing;
+DELETE FROM  CWPricingRecord;
+DELETE FROM  PricingRecord;
+DELETE FROM  UserFilterRecord_Market;
+DELETE FROM  UserFilterRecord_Category;
+DELETE FROM  UserFilterRecord_Branch;
+DELETE FROM  UserFilterRecord_Vendor;
+DELETE FROM  UserFilterRecord_ProductType;
+DELETE FROM  USERFILTERRECORD_SHIPPOINT;
+DELETE FROM  USERFILTERRECORD_PRODUCT;
+DELETE FROM  UserFilterRecord;
+DELETE FROM  PricingAdjustment;
+DELETE FROM  BranchOverride;
+
+DELETE FROM  User_Branch;
+DELETE FROM  User_Role;
+DELETE FROM  user_table;
+DELETE FROM  Role;
+DELETE FROM  Product;
+DELETE FROM  ShipPoint;
+DELETE FROM  Vendor;
+DELETE FROM  Category;
+DELETE FROM  Branch;
+DELETE FROM  Market;
+DELETE FROM  ProductType;
+DELETE FROM  Region;
+DELETE FROM  District;
+DELETE FROM  State;
+DELETE FROM State_Lookup;
+DELETE FROM Origination_ProductType

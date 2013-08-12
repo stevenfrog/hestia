@@ -1,0 +1,66 @@
+
+DROP SEQUENCE StateSeq;
+DROP SEQUENCE DistrictSeq;
+DROP SEQUENCE RegionSeq;
+DROP SEQUENCE ProductTypeSeq;
+DROP SEQUENCE MarketSeq;
+DROP SEQUENCE BranchSeq;
+DROP SEQUENCE CategorySeq;
+DROP SEQUENCE VendorSeq;
+DROP SEQUENCE ShipPointSeq;
+DROP SEQUENCE ProductSeq;
+DROP SEQUENCE RoleSeq;
+DROP SEQUENCE UserSeq;
+
+DROP SEQUENCE OgnToStateFreightRateSeq;
+DROP SEQUENCE OgnToDstFreightRateSeq;
+DROP SEQUENCE OriginationSeq;
+DROP SEQUENCE NewPPTSeq;
+DROP SEQUENCE NewListAndMultiplierSeq;
+DROP SEQUENCE NewFreightRateSeq;
+DROP SEQUENCE DestinationSeq;
+DROP SEQUENCE MyPricingSeq;
+DROP SEQUENCE CWPricingRecordSeq;
+DROP SEQUENCE PricingRecordSeq;
+DROP SEQUENCE UserFilterRecordSeq;
+DROP SEQUENCE PricingAdjustmentSeq;
+DROP SEQUENCE BranchOverrideSeq;
+
+DROP TABLE  OriginationToStateFreightRate;
+DROP TABLE  OgnToDstFreightRate;
+DROP TABLE  Origination;
+DROP TABLE  NewPPT;
+DROP TABLE  NewListAndMultiplier;
+DROP TABLE  NewFreightRate;
+DROP TABLE  Destination;
+DROP TABLE  MyPricing;
+DROP TABLE  CWPricingRecord;
+DROP TABLE  PricingRecord;
+DROP TABLE  UserFilterRecord_Market;
+DROP TABLE  UserFilterRecord_Category;
+DROP TABLE  UserFilterRecord_Branch;
+DROP TABLE  UserFilterRecord_Vendor;
+DROP TABLE  UserFilterRecord_ProductType;
+DROP TABLE  USERFILTERRECORD_SHIPPOINT;
+DROP TABLE  USERFILTERRECORD_PRODUCT;
+DROP TABLE  UserFilterRecord;
+DROP TABLE  PricingAdjustment;
+DROP TABLE  BranchOverride;
+
+DROP TABLE  User_Branch;
+DROP TABLE  User_Role;
+DROP TABLE  user_table;
+DROP TABLE  Role;
+
+DROP TABLE  Product;
+DROP TABLE  ShipPoint;
+DROP TABLE  Vendor;
+DROP TABLE  Category;
+DROP TABLE  Branch;
+DROP TABLE  Market;
+DROP TABLE  ProductType;
+DROP TABLE  Region;
+DROP TABLE  District;
+DROP TABLE  State;
+DROP TABLE  State_Lookup;
+DROP TABLE  Origination_ProductType
