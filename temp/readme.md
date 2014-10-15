@@ -53,13 +53,15 @@ A micro service to store settings for users on topcoder.
 **properties.js**
 
 Property Name | Description | Example Setting
-------------- | ----------- | -------------
+------------- | ---------- | -------------
 DB_URL | Database URL | mongodb://localhost/test
 HOST_PORT | host port | 4545
 
 
-**grunt scripts**
+**grunt scrips**
 
+Task Name | Description
+------------- | ----------
 mochaTest | Run mocha test
 jshint | Use jshint to check each js file
 
